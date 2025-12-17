@@ -15,7 +15,7 @@
 ### Linux/macOS（或 Windows 已安装 `make`）
 
 - 日常编译（默认安静）：`make`
-- 草稿模式（图片占位加速）：`make draft`
+- 草稿模式（图片占位加速）：`make draft`（**草稿模式只支持单主文件工程：`docs/` 顶层只能存在一个入口 `*.tex`；辅助 `.tex` 请放到 `sections/`**）
 - 查错编译（输出更详细）：`make debug`
 - 清理中间文件（保留 PDF）：`make clean`
 - 完全清理（包含 PDF）：`make distclean`
@@ -27,7 +27,7 @@
 在 `docs\` 目录下运行：
 
 - 日常编译（默认安静）：`build.bat`
-- 草稿模式（图片占位加速）：`build.bat draft`
+- 草稿模式（图片占位加速）：`build.bat draft`（**草稿模式只支持单主文件工程：`docs/` 顶层只能存在一个入口 `*.tex`；辅助 `.tex` 请放到 `sections/`**）
 - 查错编译：`build.bat debug`
 - 草稿查错编译：`build.bat draftdebug`
 - 清理中间文件（保留 PDF）：`build.bat clean`
@@ -41,9 +41,14 @@
 - 切换引擎：
   - `set ENGINE=lualatex` 然后执行 `build.bat`
 
+PowerShell（VSCode 终端常见）对应写法：
+
+- 需要 minted / 开启 `-shell-escape`：`$env:SHELL_ESCAPE=1; .\build.bat`
+- 切换引擎：`$env:ENGINE="lualatex"; .\build.bat`
+
 ## 说明
 
 - 编译错误会以 `file:line` 形式输出（`-file-line-error`），便于编辑器跳转定位。
 - `docs/latexmkrc` 为可选配置；主要构建参数由 `Makefile` / `build.bat` 控制。
+- `debug` / `draftdebug`：关闭 `-silent`，使用 `-interaction=errorstopmode -halt-on-error -file-line-error`，便于快速定位报错（必要时可直接打开 `build/*.log`）。
 - 草稿模式会在 `build/` 下自动生成一个 `*-draft.tex` 包装文件（不应提交到 git）。
-- 草稿模式依赖约束：`docs/` 目录下只能有一个“主”`.tex` 文件（顶层 `*.tex` 只能有一个）；否则无法自动匹配要编译的主文件。
