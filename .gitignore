@@ -1,0 +1,29 @@
+# LaTeX build outputs
+docs/build/
+**/build/
+
+# latexmk
+*.fls
+*.fdb_latexmk
+
+# TeX auxiliary
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.synctex.gz
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+
+# minted
+_minted-*
+**/_minted-*
+
+# latex temp
+*.nav
+*.snm
+*.vrb

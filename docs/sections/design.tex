@@ -1,0 +1,50 @@
+\section{Triton 的核心概念（示例）}
+\subsection{编程模型}
+Triton 常用的描述方式是“以 block/tile 为单位的张量计算”：将大问题拆成若干 tile，每个 program 实例负责处理一块 tile，
+并通过显式的内存访问模式来争取更好的带宽利用率。
+
+\subsection{示例图片}
+图 \ref{fig:placeholder} 只是为了演示图像插入与构建流程。
+在 \texttt{docs/} 子工程里，我们把图片文件放在 \texttt{docs/figures/} 下，避免与仓库其它目录冲突。
+
+\begin{figure}[H]
+  \centering
+  \IfFileExists{figures/placeholder.pdf}{%
+    \includegraphics[width=0.72\textwidth]{figures/placeholder.pdf}%
+  }{%
+    \fbox{\parbox[c][4cm][c]{0.72\textwidth}{\centering Placeholder Figure}}%
+  }
+  \caption{示例图片（可用 placeholder.pdf，也可用占位框）}
+  \label{fig:placeholder}
+\end{figure}
+
+\subsection{示例表格}
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lcc}
+    \hline
+    方案 & 开发体验（主观） & 性能可控性（主观） \\
+    \hline
+    CUDA C++ & 中等 & 很高 \\
+    Triton & 较高 & 较高 \\
+    纯 Python/NumPy & 很高 & 较低 \\
+    \hline
+  \end{tabular}
+  \caption{示例表格：调研维度的占位内容}
+\end{table}
+
+\subsection{示例代码块}
+下面是一个“伪 Triton 风格”的代码片段（仅用于排版示例，不保证可运行）：
+\begin{lstlisting}[language=Python,caption={示例代码：伪 Triton Kernel 结构}]
+import triton
+import triton.language as tl
+
+@triton.jit
+def add_kernel(X_ptr, Y_ptr, Z_ptr, n_elements: tl.constexpr, BLOCK: tl.constexpr):
+    pid = tl.program_id(0)
+    offsets = pid * BLOCK + tl.arange(0, BLOCK)
+    mask = offsets < n_elements
+    x = tl.load(X_ptr + offsets, mask=mask, other=0.0)
+    y = tl.load(Y_ptr + offsets, mask=mask, other=0.0)
+    tl.store(Z_ptr + offsets, x + y, mask=mask)
+\end{lstlisting}

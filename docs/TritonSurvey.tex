@@ -1,0 +1,80 @@
+\documentclass[UTF8,12pt]{ctexart}
+
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\ifdefined\TRITONDRAFT
+  \PassOptionsToPackage{draft}{graphicx}
+\fi
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\geometry{a4paper,margin=2.2cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+% Keep section titles left-aligned.
+\ctexset{
+  section = {format=\Large\bfseries\raggedright},
+  subsection = {format=\large\bfseries\raggedright},
+  subsubsection = {format=\normalsize\bfseries\raggedright}
+}
+
+\definecolor{codegray}{rgb}{0.45,0.45,0.45}
+\definecolor{codeblue}{rgb}{0.0,0.25,0.75}
+\definecolor{codegreen}{rgb}{0.0,0.5,0.0}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{codegray},
+  keywordstyle=\color{codeblue},
+  commentstyle=\color{codegreen},
+  showstringspaces=false
+}
+
+\graphicspath{{}{figures/}}
+
+\begin{document}
+\sloppy
+
+\begin{titlepage}
+\begin{center}
+\linespread{1.2}\huge {\bfseries Fudan University}\\[1cm]
+\linespread{1}
+\IfFileExists{figures/fudan-name.pdf}{%
+  \includegraphics[width=10cm]{figures/fudan-name.pdf}\\[3cm]%
+}{%
+  \vspace{3.5cm}%
+}
+
+\linespread{1.8}\Large {\bfseries Parallel Computing}\\
+\linespread{1.8}\Large {\bfseries Language Survey}\\[0.6cm]
+\linespread{1.6}\huge {\bfseries TritonSurvey}\\[3.0cm]
+
+\Large 姓名：（示例作者）\\
+\Large 学号：（示例学号）\\[2.0cm]
+
+\normalsize \the\year 年 \the\month 月
+\end{center}
+\end{titlepage}
+
+\newpage
+\begin{abstract}
+本文档是一个可直接编译的中文示例稿，展示如何用 \texttt{latexmk + Makefile} 管理文档构建。
+内容围绕 Triton（面向 GPU 的 Python DSL）做一个“语言调研”风格的简要介绍，并提供少量示例引用与参考文献。
+\end{abstract}
+
+\clearpage
+\tableofcontents
+\newpage
+
+\input{sections/intro}
+\input{sections/design}
+\input{sections/conclusion}
+
+\end{document}

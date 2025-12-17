@@ -1,0 +1,10 @@
+# Optional latexmk configuration for this docs/ subproject.
+# Makefile still passes engine, outdir, and interaction mode.
+$recorder = 1;
+$pdf_mode = 1;
+
+# Keep log output in a consistent encoding on Windows terminals.
+$max_repeat = 5;
+
+# Note: shell-escape is controlled by the Makefile via:
+#   make SHELL_ESCAPE=1
