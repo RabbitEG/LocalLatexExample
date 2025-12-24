@@ -1,6 +1,6 @@
-# Document build (LaTeX) lives under <DOC_ROOT>/ and does not touch the repo root.
+# Document build (LaTeX) lives under docs/ and does not touch the repo root.
 #
-# Usage (run inside <DOC_ROOT>/):
+# Usage (run inside docs/):
 #   make
 #   make draft
 #   make debug
@@ -76,8 +76,8 @@ draft:
 	@sh -c 'set -e; \
 		COUNT=$$(ls -1 *.tex 2>/dev/null | wc -l | tr -d " "); \
 		if [ "$$COUNT" -ne 1 ]; then \
-			echo "[fail] Draft mode requires exactly one main .tex in <DOC_ROOT>/; found $$COUNT."; \
-			echo "[fail] Please keep only one top-level .tex file in <DOC_ROOT>/."; \
+			echo "[fail] Draft mode requires exactly one main .tex in docs/; found $$COUNT."; \
+			echo "[fail] Please keep only one top-level .tex file in docs/."; \
 			exit 2; \
 		fi; \
 		MAIN=$$(ls -1 *.tex); \
@@ -138,5 +138,3 @@ ifeq ($(OS),Windows_NT)
 else
 	@sh -c 'command -v xdg-open >/dev/null 2>&1 && xdg-open "$(OUTDIR)/TritonSurvey.pdf" || open "$(OUTDIR)/TritonSurvey.pdf"'
 endif
-
-

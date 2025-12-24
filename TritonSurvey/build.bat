@@ -2,10 +2,10 @@
 setlocal EnableExtensions EnableDelayedExpansion
 
 rem -----------------------------------------------------------------------------
-rem <DOC_ROOT>\\\build.bat
+rem docs\build.bat
 rem
 rem Windows-friendly wrapper for building docs without GNU Make.
-rem Output directory is always: <DOC_ROOT>\\\build\
+rem Output directory is always: docs\build\
 rem
 rem Commands:
 rem   build.bat            -> release build (silent)
@@ -135,8 +135,8 @@ for %%F in (*.tex) do (
   set MAIN_TEX=%%F
 )
 if not "%MAIN_COUNT%"=="1" (
-  echo Draft mode requires exactly one main .tex file in <DOC_ROOT>\\\; found %MAIN_COUNT%.
-  echo Please keep only one top-level .tex file in <DOC_ROOT>\\\.
+  echo Draft mode requires exactly one main .tex file in docs\; found %MAIN_COUNT%.
+  echo Please keep only one top-level .tex file in docs\.
   exit /b 2
 )
 set MAIN_BASE=%MAIN_TEX:~0,-4%
@@ -153,7 +153,7 @@ exit /b 0
 :run_release
 rem Args:
 rem   %1 = input tex path (can be build/... for wrapper)
-rem   %2 = expected output PDF path (windows path, relative to <DOC_ROOT>\\\)
+rem   %2 = expected output PDF path (windows path, relative to docs\)
 set "RUN_TEX=%~1"
 set "RUN_PDF=%~2"
 set "RUNLOG=%OUTDIR%\\latexmk-%RANDOM%.log"
@@ -206,5 +206,3 @@ popd
 endlocal & exit /b %EXITCODE%
 popd
 endlocal
-
-
