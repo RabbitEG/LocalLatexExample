@@ -1,0 +1,17 @@
+﻿\section{背景与目标}
+在 GPU 编程生态里，开发者常见的选择包括 CUDA C++、OpenCL，以及更高层的编程抽象（如基于 Python 的 DSL）。Triton 的定位可以粗略理解为：在保持性能可控的同时，提供更接近 Python 科研/工程栈的开发体验\cite{triton}。
+
+本文档的目标是：
+\begin{itemize}
+  \item 提供一个最小但完整的可编译结构（目录、公式、表格、代码块、图片）。
+  \item 演示通过 \texttt{latexmk} 自动决定“跑几遍”，并把产物集中到 \texttt{build/}。
+\end{itemize}
+
+\subsection{一个极简的性能直觉}
+下面给出一个非常粗糙的估算公式（仅用于示例排版）：
+\begin{equation}
+  T \approx \frac{\text{Bytes Moved}}{\text{Memory Bandwidth}} + \frac{\text{FLOPs}}{\text{Compute Throughput}}.
+\end{equation}
+在工程实践中，通常会结合硬件文档和编程指南来验证这些直觉\cite{cuda_guide}。
+\par\noindent 待补充。
+\clearpage

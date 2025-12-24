@@ -2,10 +2,10 @@
 setlocal EnableExtensions EnableDelayedExpansion
 
 rem -----------------------------------------------------------------------------
-rem docs\build.bat
+rem <DOC_ROOT>\\\build.bat
 rem
 rem Windows-friendly wrapper for building docs without GNU Make.
-rem Output directory is always: docs\build\
+rem Output directory is always: <DOC_ROOT>\\\build\
 rem
 rem Commands:
 rem   build.bat            -> release build (silent)
@@ -26,6 +26,10 @@ pushd "%~dp0"
 
 set TEX_MAIN=TritonSurvey.tex
 set OUTDIR=build
+set REPORT_SCRIPT=tools\\report.py
+set REPORT_OUT=%OUTDIR%\\doc-report.txt
+set REPORT_SECTIONS_OUT=%OUTDIR%\\doc-report-sections.txt
+set REPORT_MAIN=%TEX_MAIN%
 
 if "%ENGINE%"=="" set ENGINE=xelatex
 if "%SHELL_ESCAPE%"=="" set SHELL_ESCAPE=0
@@ -64,22 +68,28 @@ goto end
 
 :build_release
 if not exist "%OUTDIR%" mkdir "%OUTDIR%"
+set REPORT_MAIN=%TEX_MAIN%
 call :run_release "%TEX_MAIN%" "%OUTDIR%\\TritonSurvey.pdf" || goto end
 goto end
 
 :build_debug
 if not exist "%OUTDIR%" mkdir "%OUTDIR%"
+set REPORT_MAIN=%TEX_MAIN%
 echo [debug] Building "%TEX_MAIN%" with ENGINE=%ENGINE% (verbose)...
 latexmk %ENGINE_FLAG% -outdir=%OUTDIR% -synctex=1 -file-line-error -interaction=errorstopmode -halt-on-error %SHELL_ESCAPE_FLAG% %TEX_MAIN%
 set EXITCODE=%ERRORLEVEL%
 if not "%EXITCODE%"=="0" echo [debug] FAILED (exit %EXITCODE%)
-if "%EXITCODE%"=="0" echo [debug] OK: %OUTDIR%\TritonSurvey.pdf
+if "%EXITCODE%"=="0" (
+  echo [debug] OK: %OUTDIR%\TritonSurvey.pdf
+  call :write_report "%REPORT_MAIN%"
+)
 goto end
 
 :build_draft_release
 if not exist "%OUTDIR%" mkdir "%OUTDIR%"
 call :detect_single_main_tex || (set EXITCODE=%ERRORLEVEL% & goto end)
 call :write_draft_wrapper || (set EXITCODE=%ERRORLEVEL% & goto end)
+set REPORT_MAIN=%MAIN_TEX%
 call :run_release "%WRAPPER_TEX%" "%OUTDIR%\\%MAIN_BASE%-draft.pdf" || goto end
 goto end
 
@@ -87,11 +97,15 @@ goto end
 if not exist "%OUTDIR%" mkdir "%OUTDIR%"
 call :detect_single_main_tex || (set EXITCODE=%ERRORLEVEL% & goto end)
 call :write_draft_wrapper || (set EXITCODE=%ERRORLEVEL% & goto end)
+set REPORT_MAIN=%MAIN_TEX%
 echo [debug] Draft building "%MAIN_TEX%" -> "%OUTDIR%\\%MAIN_BASE%-draft.pdf" (verbose)...
 latexmk %ENGINE_FLAG% -outdir=%OUTDIR% -synctex=1 -file-line-error -interaction=errorstopmode -halt-on-error %SHELL_ESCAPE_FLAG% "%WRAPPER_TEX%"
 set EXITCODE=%ERRORLEVEL%
 if not "%EXITCODE%"=="0" echo [debug] FAILED (exit %EXITCODE%)
-if "%EXITCODE%"=="0" echo [debug] OK: %OUTDIR%\%MAIN_BASE%-draft.pdf
+if "%EXITCODE%"=="0" (
+  echo [debug] OK: %OUTDIR%\%MAIN_BASE%-draft.pdf
+  call :write_report "%REPORT_MAIN%"
+)
 goto end
 
 :do_clean
@@ -100,6 +114,7 @@ latexmk -c -outdir=%OUTDIR% %TEX_MAIN% >nul 2>&1
 if exist %OUTDIR%\\*-draft.tex (
   for %%F in (%OUTDIR%\\*-draft.tex) do latexmk -c -outdir=%OUTDIR% "%%~fF" >nul 2>&1
 )
+del /q "%OUTDIR%\\latexmk-*.log" 2>nul
 if exist "%OUTDIR%\\_minted-*" rd /s /q "%OUTDIR%\\_minted-*" 2>nul
 if exist "_minted-*" rd /s /q "_minted-*" 2>nul
 set EXITCODE=0
@@ -120,8 +135,8 @@ for %%F in (*.tex) do (
   set MAIN_TEX=%%F
 )
 if not "%MAIN_COUNT%"=="1" (
-  echo Draft mode requires exactly one main .tex file in docs\; found %MAIN_COUNT%.
-  echo Please keep only one top-level .tex file in docs\.
+  echo Draft mode requires exactly one main .tex file in <DOC_ROOT>\\\; found %MAIN_COUNT%.
+  echo Please keep only one top-level .tex file in <DOC_ROOT>\\\.
   exit /b 2
 )
 set MAIN_BASE=%MAIN_TEX:~0,-4%
@@ -138,7 +153,7 @@ exit /b 0
 :run_release
 rem Args:
 rem   %1 = input tex path (can be build/... for wrapper)
-rem   %2 = expected output PDF path (windows path, relative to docs\)
+rem   %2 = expected output PDF path (windows path, relative to <DOC_ROOT>\\\)
 set "RUN_TEX=%~1"
 set "RUN_PDF=%~2"
 set "RUNLOG=%OUTDIR%\\latexmk-%RANDOM%.log"
@@ -158,6 +173,7 @@ if "%RUNS%"=="" set RUNS=?
 if "%EXITCODE%"=="0" (
   echo [ok] %RUN_PDF%  (!RUNS! runs, !ELAPSED_SEC!s^)
   del /q "%RUNLOG%" 2>nul
+  call :write_report "%REPORT_MAIN%"
   exit /b 0
 )
 
@@ -177,8 +193,18 @@ start "" "%OUTDIR%\\TritonSurvey.pdf"
 set EXITCODE=0
 goto end
 
+:write_report
+rem Args:
+rem   %1 = main tex path
+if not exist "%REPORT_SCRIPT%" exit /b 0
+where python >nul 2>&1 || (echo [report] python not found, skipping & exit /b 0)
+python -B "%REPORT_SCRIPT%" --main "%~1" --out "%REPORT_OUT%" --out-sections "%REPORT_SECTIONS_OUT%"
+exit /b 0
+
 :end
 popd
 endlocal & exit /b %EXITCODE%
 popd
 endlocal
+
+

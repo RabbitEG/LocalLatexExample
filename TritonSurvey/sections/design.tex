@@ -1,12 +1,9 @@
-\section{Triton 的核心概念（示例）}
+﻿\section{Triton 的核心概念（示例）}
 \subsection{编程模型}
-Triton 常用的描述方式是“以 block/tile 为单位的张量计算”：将大问题拆成若干 tile，每个 program 实例负责处理一块 tile，
-并通过显式的内存访问模式来争取更好的带宽利用率。
+Triton 常用的描述方式是“以 block/tile 为单位的张量计算”：将大问题拆成若干 tile，每个 program 实例负责处理一块 tile，并通过显式的内存访问模式来争取更好的带宽利用率。
 
 \subsection{示例图片}
-图 \ref{fig:placeholder} 只是为了演示图像插入与构建流程。
-在 \texttt{docs/} 子工程里，我们把图片文件放在 \texttt{docs/figures/} 下，避免与仓库其它目录冲突。
-
+图\ref{fig:placeholder} 只是为了演示图像插入与构建流程。在 \texttt{DOC\_ROOT/} 子工程里，我们把图片文件放在 \texttt{DOC\_ROOT/figures/} 下，避免与仓库其它目录冲突。
 \begin{figure}[H]
   \centering
   \IfFileExists{figures/placeholder.pdf}{%
@@ -23,7 +20,7 @@ Triton 常用的描述方式是“以 block/tile 为单位的张量计算”：�
   \centering
   \begin{tabular}{lcc}
     \hline
-    方案 & 开发体验（主观） & 性能可控性（主观） \\
+    方案 & 开发体验（主观） & 性能可控性（主观）\\
     \hline
     CUDA C++ & 中等 & 很高 \\
     Triton & 较高 & 较高 \\
@@ -48,3 +45,5 @@ def add_kernel(X_ptr, Y_ptr, Z_ptr, n_elements: tl.constexpr, BLOCK: tl.constexp
     y = tl.load(Y_ptr + offsets, mask=mask, other=0.0)
     tl.store(Z_ptr + offsets, x + y, mask=mask)
 \end{lstlisting}
+\par\noindent 待补充。
+\clearpage

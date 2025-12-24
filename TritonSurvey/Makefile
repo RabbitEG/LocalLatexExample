@@ -1,6 +1,6 @@
-# Document build (LaTeX) lives under docs/ and does not touch the repo root.
+# Document build (LaTeX) lives under <DOC_ROOT>/ and does not touch the repo root.
 #
-# Usage (run inside docs/):
+# Usage (run inside <DOC_ROOT>/):
 #   make
 #   make draft
 #   make debug
@@ -17,6 +17,9 @@ TEX_MAIN := TritonSurvey.tex
 OUTDIR   := build
 ENGINE   := xelatex
 SHELL_ESCAPE ?= 0
+REPORT_SCRIPT := tools/report.py
+REPORT_OUT := $(OUTDIR)/doc-report.txt
+REPORT_SECTIONS_OUT := $(OUTDIR)/doc-report-sections.txt
 
 LATEXMK := latexmk
 
@@ -57,6 +60,11 @@ all:
 		if [ "$$EC" -eq 0 ]; then \
 			echo "[ok] $(OUTDIR)/$${TEX_MAIN%.tex}.pdf  ($$RUNS runs, $${ELAPSED}s)"; \
 			rm -f "$$LOG"; \
+			if command -v python >/dev/null 2>&1; then \
+				python -B "$(REPORT_SCRIPT)" --main "$(TEX_MAIN)" --out "$(REPORT_OUT)" --out-sections "$(REPORT_SECTIONS_OUT)"; \
+			else \
+				echo "[report] python not found, skipping"; \
+			fi; \
 		else \
 			echo "[fail] Exit $$EC  ($${ELAPSED}s)"; \
 			echo "[fail] See: $$LOG"; \
@@ -68,8 +76,8 @@ draft:
 	@sh -c 'set -e; \
 		COUNT=$$(ls -1 *.tex 2>/dev/null | wc -l | tr -d " "); \
 		if [ "$$COUNT" -ne 1 ]; then \
-			echo "[fail] Draft mode requires exactly one main .tex in docs/; found $$COUNT."; \
-			echo "[fail] Please keep only one top-level .tex file in docs/."; \
+			echo "[fail] Draft mode requires exactly one main .tex in <DOC_ROOT>/; found $$COUNT."; \
+			echo "[fail] Please keep only one top-level .tex file in <DOC_ROOT>/."; \
 			exit 2; \
 		fi; \
 		MAIN=$$(ls -1 *.tex); \
@@ -86,6 +94,11 @@ draft:
 		if [ "$$EC" -eq 0 ]; then \
 			echo "[ok] $(OUTDIR)/$${BASE}-draft.pdf  ($$RUNS runs, $${ELAPSED}s)"; \
 			rm -f "$$LOG"; \
+			if command -v python >/dev/null 2>&1; then \
+				python -B "$(REPORT_SCRIPT)" --main "$$MAIN" --out "$(REPORT_OUT)" --out-sections "$(REPORT_SECTIONS_OUT)"; \
+			else \
+				echo "[report] python not found, skipping"; \
+			fi; \
 		else \
 			echo "[fail] Exit $$EC  ($${ELAPSED}s)"; \
 			echo "[fail] See: $$LOG"; \
@@ -96,6 +109,11 @@ debug:
 	mkdir -p $(OUTDIR)
 	@echo "[debug] $(TEX_MAIN)  (ENGINE=$(ENGINE), shell-escape=$(SHELL_ESCAPE))"
 	$(LATEXMK) $(DEBUG_FLAGS) $(TEX_MAIN)
+	@sh -c 'if command -v python >/dev/null 2>&1; then \
+		python -B "$(REPORT_SCRIPT)" --main "$(TEX_MAIN)" --out "$(REPORT_OUT)" --out-sections "$(REPORT_SECTIONS_OUT)"; \
+	else \
+		echo "[report] python not found, skipping"; \
+	fi'
 
 # Remove LaTeX intermediates while keeping the PDF.
 clean:
@@ -104,6 +122,7 @@ clean:
 	@if ls $(OUTDIR)/*-draft.tex >/dev/null 2>&1; then \
 		for f in $(OUTDIR)/*-draft.tex; do $(LATEXMK) -c -outdir=$(OUTDIR) "$$f" >/dev/null 2>&1 || true; done; \
 	fi
+	@rm -f $(OUTDIR)/latexmk-*.log
 	@rm -rf $(OUTDIR)/_minted-* _minted-*
 
 # Remove everything under build/, including the PDF.
@@ -119,3 +138,5 @@ ifeq ($(OS),Windows_NT)
 else
 	@sh -c 'command -v xdg-open >/dev/null 2>&1 && xdg-open "$(OUTDIR)/TritonSurvey.pdf" || open "$(OUTDIR)/TritonSurvey.pdf"'
 endif
+
+

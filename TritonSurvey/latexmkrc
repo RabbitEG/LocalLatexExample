@@ -1,4 +1,4 @@
-# Optional latexmk configuration for this docs/ subproject.
+# Optional latexmk configuration for this <DOC_ROOT>/ subproject.
 # Makefile still passes engine, outdir, and interaction mode.
 $recorder = 1;
 $pdf_mode = 1;
@@ -8,3 +8,5 @@ $max_repeat = 5;
 
 # Note: shell-escape is controlled by the Makefile via:
 #   make SHELL_ESCAPE=1
+
+

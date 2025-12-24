@@ -1,4 +1,4 @@
-\documentclass[UTF8,12pt]{ctexart}
+﻿\documentclass[UTF8,12pt]{ctexart}
 
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
@@ -10,9 +10,11 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
+\usepackage{subcaption}
+\usepackage{booktabs}
 
 \geometry{a4paper,margin=2.2cm}
-\setlength{\parindent}{0pt}
+\setlength{\parindent}{2em}
 \setlength{\parskip}{0.4em}
 
 % Keep section titles left-aligned.
@@ -63,15 +65,17 @@
 \end{center}
 \end{titlepage}
 
-\newpage
+\clearpage
+\renewcommand{\abstractname}{\large 摘要}
 \begin{abstract}
-本文档是一个可直接编译的中文示例稿，展示如何用 \texttt{latexmk + Makefile} 管理文档构建。
-内容围绕 Triton（面向 GPU 的 Python DSL）做一个“语言调研”风格的简要介绍，并提供少量示例引用与参考文献。
+本文档是一个可直接编译的中文示例稿，展示如何用 \texttt{latexmk + Makefile} 管理文档构建。内容围绕 Triton（面向 GPU 的 Python DSL）做一个“语言调研”风格的简要介绍，并提供少量示例引用与参考文献。
 \end{abstract}
 
 \clearpage
 \tableofcontents
 \newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
 
 \input{sections/intro}
 \input{sections/design}
